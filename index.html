@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/assets/reset.css" />
+    <link rel="stylesheet" href="/src/assets/style.css" />
+    <title>Game of Life</title>
+  </head>
+  <body>
+    <main class="main-wrapper">
+      <canvas id="game-of-life" width="600" height="600"></canvas>
+      <div class="game-info">
+        <div class="game-info__status">
+          Status: <span data-game-status>paused</span>
+        </div>
+        <div>Generation: <span data-game-generation>0</span></div>
+      </div>
+      <div class="controls">
+        <button class="btn" id="next-gen">Next Generation</button>
+        <button class="btn" id="start">Start</button>
+        <button class="btn" id="pause">Pause</button>
+        <button class="btn" id="reset">Reset</button>
+      </div>
+    </main>
+
+    <script type="module" src="/src/scripts/main.ts"></script>
+  </body>
+</html>
