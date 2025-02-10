@@ -4,6 +4,17 @@ import { Cell, Controller, GameState, View } from './types';
 const CELL_SIZE = 10;
 const ROWS = 40;
 const COLS = 70;
+const STORAGE_ID = 'game-of-life';
+const DEFAULT_GAME_STATE: GameState = {
+  isRunning: false,
+  runningIntervalId: 0,
+  generationCount: 0,
+  speed: 500,
+  cellsData: [],
+  cellSize: CELL_SIZE,
+  rows: ROWS,
+  cols: COLS,
+};
 
 const OFFSET_MATRIX = [
   [-1, -1],
@@ -40,7 +51,6 @@ nextGenBtnEl.addEventListener('click', () => {
 
 startBtnEl.addEventListener('click', () => {
   controller.startGame();
-  model.runningIntervalId = setInterval(controller.updateGame, model.speed);
 });
 
 pauseBtnEl.addEventListener('click', () => {
@@ -68,26 +78,45 @@ function handleClick(event: MouseEvent) {
   view.displayCells();
 }
 
-const model: GameState = {
-  isRunning: false,
-  runningIntervalId: 0,
-  generationCount: 0,
-  speed: 500,
-  cellsData: [],
-  cellSize: CELL_SIZE,
-  rows: ROWS,
-  cols: COLS,
-};
+const model: GameState = { ...DEFAULT_GAME_STATE };
 
 const controller: Controller = {
+  initGame() {
+    const storedData = controller.readFromStorage(STORAGE_ID);
+    if (storedData) {
+      Object.assign(model, storedData);
+    } else {
+      Object.assign(model, {
+        ...DEFAULT_GAME_STATE,
+        cellsData: this.generetaCellsData(),
+      });
+    }
+  },
+
+  writeToStorage(storageId) {
+    localStorage.setItem(storageId, JSON.stringify(model));
+  },
+
+  readFromStorage(storageId) {
+    const storedData = localStorage.getItem(storageId);
+    if (!storedData) return null;
+    const parsedData = JSON.parse(storedData) as GameState;
+    return parsedData;
+  },
+
   startGame() {
-    if (model.isRunning) return;
+    clearInterval(model.runningIntervalId);
+    model.runningIntervalId = setInterval(
+      () => controller.updateGame(),
+      model.speed
+    );
     model.isRunning = true;
+    this.writeToStorage(STORAGE_ID);
     document.dispatchEvent(new Event('game-state-changed'));
   },
 
-  initCellsData() {
-    model.cellsData = new Array(model.rows).fill(null).map(() =>
+  generetaCellsData() {
+    return new Array(model.rows).fill(null).map(() =>
       new Array(model.cols).fill(null).map(
         () =>
           ({
@@ -134,29 +163,32 @@ const controller: Controller = {
         cell.nextAlive = false;
       }
     }
-    model.generationCount++;
-
+    model.generationCount += 1;
+    this.writeToStorage(STORAGE_ID);
     document.dispatchEvent(new Event('game-state-changed'));
   },
+
   pauseGame() {
     if (!model.isRunning) return;
     clearInterval(model.runningIntervalId);
     model.isRunning = false;
+    this.writeToStorage(STORAGE_ID);
     document.dispatchEvent(new Event('game-state-changed'));
   },
+
   resetGame() {
-    if (model.isRunning) {
-      clearInterval(model.runningIntervalId);
-      model.isRunning = false;
-    }
+    clearInterval(model.runningIntervalId);
+    model.isRunning = false;
     model.generationCount = 0;
-    controller.initCellsData();
+    model.cellsData = controller.generetaCellsData();
+    this.writeToStorage(STORAGE_ID);
     document.dispatchEvent(new Event('game-state-changed'));
   },
 
   toggleCell(col, row) {
     const cell = model.cellsData[row][col];
     cell.curAlive = !cell.curAlive;
+    this.writeToStorage(STORAGE_ID);
     document.dispatchEvent(new Event('game-state-changed'));
   },
 };
@@ -191,7 +223,10 @@ const view: View = {
 };
 
 function init() {
-  controller.initCellsData();
+  controller.initGame();
+  if (model.isRunning) {
+    controller.startGame();
+  }
   view.displayCells();
   view.displayGameInfo();
 }

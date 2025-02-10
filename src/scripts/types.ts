@@ -8,7 +8,7 @@ export type Cell = {
   nextAlive?: boolean;
 };
 
-export type GameState = {
+export interface GameState {
   isRunning: boolean;
   runningIntervalId?: number;
   generationCount: number;
@@ -17,18 +17,21 @@ export type GameState = {
   cellSize: number;
   rows: number;
   cols: number;
-};
+}
 
-export type View = {
+export interface View {
   displayCells(): void;
   displayGameInfo(): void;
-};
+}
 
-export type Controller = {
-  initCellsData(): void;
+export interface Controller {
+  initGame(): void;
+  writeToStorage(storageId: string): void;
+  readFromStorage(storageId: string): GameState | null;
+  generetaCellsData(): Cell[][];
   startGame(): void;
   updateGame(): void;
   pauseGame(): void;
   resetGame(): void;
   toggleCell(col: number, row: number): void;
-};
+}
