@@ -11,6 +11,8 @@ A simple implementation of the Game of Life using TypeScript and Canvas API.
 - [x] fix grid sizing
 - [x] fix cursor positioning
 - [x] preserve game state on page reload
+- [ ] 'pencil' mode
+- [ ] UI overhaul
 - [ ] customizable speed
-- [ ] save/load game
 - [ ] animations
+- [ ] pick 'creature' from list
