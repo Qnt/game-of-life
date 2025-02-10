@@ -1,31 +1,10 @@
 import { getCoordsFromClientXY, throttle } from '../libs/utils';
 import { Cell, Controller, GameState, View } from './types';
-
-const CELL_SIZE = 10;
-const ROWS = 40;
-const COLS = 70;
-const STORAGE_ID = 'game-of-life';
-const DEFAULT_GAME_STATE: GameState = {
-  isRunning: false,
-  runningIntervalId: 0,
-  generationCount: 0,
-  speed: 500,
-  cellsData: [],
-  cellSize: CELL_SIZE,
-  rows: ROWS,
-  cols: COLS,
-};
-
-const OFFSET_MATRIX = [
-  [-1, -1],
-  [0, -1],
-  [1, -1],
-  [-1, 0],
-  [1, 0],
-  [-1, 1],
-  [0, 1],
-  [1, 1],
-];
+import {
+  DEFAULT_GAME_STATE,
+  OFFSET_MATRIX,
+  STORAGE_ID,
+} from '../data/constants';
 
 const canvasEl = document.getElementById('game-of-life') as HTMLCanvasElement;
 const ctx = canvasEl.getContext('2d') as CanvasRenderingContext2D;
@@ -120,8 +99,7 @@ const controller: Controller = {
       new Array(model.cols).fill(null).map(
         () =>
           ({
-            curAlive: false,
-            nextAlive: false,
+            curAlive: Math.random() > 0.8,
           } satisfies Cell)
       )
     );
