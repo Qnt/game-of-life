@@ -14,6 +14,9 @@ export type GameState = {
   generationCount: number;
   speed: number;
   cellsData: Cell[][];
+  cellSize: number;
+  rows: number;
+  cols: number;
 };
 
 export type View = {
@@ -22,9 +25,10 @@ export type View = {
 };
 
 export type Controller = {
+  initCellsData(): void;
   startGame(): void;
   updateGame(): void;
   pauseGame(): void;
   resetGame(): void;
-  toggleCell(coords: Coords): void;
+  toggleCell(col: number, row: number): void;
 };
